@@ -3,7 +3,7 @@
     <div class="nav_box">
       <div class="logo_box">
         <a href="">
-          <img src="../assets/logo.png" alt="" class="logo" />
+          <img src="../assets/logo.jpg" alt="" class="logo" />
             <!-- <img src="../assets/logo1.jpg" alt="" class="logo" /> -->
         </a>
       </div>

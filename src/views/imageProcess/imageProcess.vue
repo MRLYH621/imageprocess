@@ -19,6 +19,8 @@
               list-type="picture-card"
               action="https://httpbin.org/post"
               multiple
+              :on-change="handleImageChange"
+              :on-remove="handleIgameRemove"
             >
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">
@@ -31,21 +33,14 @@
 
         <div class="contaner-box-right">
           <div class="title-box">
-            <div class="hint"><p>已上传0张文件，共0.00KB</p></div>
+            <div class="hint">
+              <p>已上传{{ fileNum }}张文件，共{{ fileSizeSum }}KB</p>
+            </div>
             <div class="upload-button">
-              <button type="button" class="el-button el-button--primary">
-                <span>开始检查</span>
-              </button>
-              <el-button type="primary">开始检测</el-button>
+              <el-button type="primary" size="mini">开始检测</el-button>
             </div>
           </div>
-          <div class="defaultImg"></div>
-          <div v-for="item in fileList" :key="item.name">
-            <img :src="item.response.files.file" />
-            <div>
-              <i class="el-icon-delete" @click="rmImage" />
-            </div>
-          </div>
+          <div :class="{ defaultImg: fileNum == 0 }"></div>
         </div>
       </div>
     </div>
@@ -56,38 +51,35 @@
 export default {
   data() {
     return {
-      fileList: [
-        // {
-        //   name: "food.jpeg",
-        //   url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        // },
-        // {
-        //   name: "food2.jpeg",
-        //   url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-        // },
-      ],
+      fileList: [],
     };
   },
+  computed: {
+    fileNum() {
+      return this.fileList.length;
+    },
+    fileSizeSum() {
+      let sizeSum = 0;
+      this.fileList.forEach((item) => {
+        sizeSum += item.size / 1024;
+      });
+      return sizeSum.toFixed(2);
+    },
+  },
   methods: {
-    async handleImageSuccess(a, b, c) {
-      console.log(a);
-      console.log(b);
-      console.log(c);
-      // this.fileList.push(file.files.file);
-      // console.log(typeof file.files.file);
-      // this.imageShow=true
-      // this.$nextTick(() => {
-      //   this.fileList.map((e) => {
-      //     e.url = e.response.files.file;
-      //   });
-      // });
-
-      console.log(this.fileList);
+    async handleImageSuccess(response, file, c) {
+      // console.log(c);
+    },
+    handleIgameRemove(file, fileList) {
+      console.log(fileList);
+      this.fileList = fileList;
+    },
+    handleImageChange(file, fileList) {
+      console.log(fileList);
+      this.fileList = fileList;
     },
     beforeUpload(file) {
-      // this.fileList=this.fileList.push(file)
-
-      console.log(this.fileList);
+      // console.log(this.fileList);
     },
   },
 };
@@ -182,7 +174,7 @@ export default {
 }
 #ImgUploads .el-upload--picture-card {
   background-color: #fbfdff;
-  border: 1px dashed #c0ccda;
+  border: 0px dashed #c0ccda;
   border-radius: 6px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -191,6 +183,34 @@ export default {
   cursor: pointer;
   line-height: 0px;
   vertical-align: top;
+}
+#ImgUploads .el-upload-list {
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 35px;
+  height: 670px;
+  -webkit-transform: translateY(20px);
+  transform: translateY(20px);
+  left: 540px;
+  top: 200px;
+}
+#ImgUploads .el-upload-list--picture-card {
+  margin: 0;
+  display: inline-block;
+  vertical-align: top;
+}
+#ImgUploads .el-upload-list__item {
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #c0ccda;
+  border-radius: 6px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 328px;
+  height: 225px;
+  margin: 0 8px 8px 0;
+  display: inline-block;
 }
 </style>
 
