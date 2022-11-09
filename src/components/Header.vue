@@ -3,7 +3,7 @@
     <div class="nav_box">
       <div class="logo_box">
         <a href="">
-          <!-- <img src="../assets/logo.png" alt="" class="logo" /> -->
+          <img src="../assets/logo.png" alt="" class="logo" />
             <!-- <img src="../assets/logo1.jpg" alt="" class="logo" /> -->
         </a>
       </div>
@@ -13,17 +13,17 @@
           <span><a id="register" style="color: white">注册</a></span>
         </div>
         <ul class="nav_list">
-          <!-- <li class="nav_li" menuorder="1">
+          <li class="nav_li" menuorder="1">
             <a class="nav_a" href="/">首页</a>
           </li>
           <li class="nav_li" menuorder="2"><a class="nav_a">目录服务</a></li>
           <li class="nav_li" menuorder="3"><a class="nav_a">数据下载</a></li>
-          <li class="nav_li" menuorder="4"><a class="nav_a">地图服务</a></li> -->
+          <li class="nav_li" menuorder="4"><a class="nav_a">地图服务</a></li>
           <li class="nav_li" menuorder="5">
             <a class="nav_a" id="current_page">知识服务</a>
           </li>
-          <!-- <li class="nav_li" menuorder="6"><a class="nav_a">专家院士</a></li>
-          <li class="nav_li" menuorder="7"><a class="nav_a">专用工具</a></li> -->
+          <li class="nav_li" menuorder="6"><a class="nav_a">专家院士</a></li>
+          <li class="nav_li" menuorder="7"><a class="nav_a">专用工具</a></li>
         </ul>
       </div>
     </div>

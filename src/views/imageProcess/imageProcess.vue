@@ -10,20 +10,21 @@
 
           <div class="contaner-box-left-upload">
             <el-upload
-              class="upload-demo"
+              :before-upload="beforeUpload"
+              :on-success="handleImageSuccess"
               drag
               :limit="5"
-              :show-file-list="false"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              :file-list="fileList"
+              :show-file-list="true"
+              list-type="picture-card"
+              action="https://httpbin.org/post"
               multiple
             >
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">
                 将文件拖到此处，或<em>点击上传</em>
               </div>
-              <div class="el-upload__tip" slot="tip">
-               
-              </div>
+              <div class="el-upload__tip" slot="tip"></div>
             </el-upload>
           </div>
         </div>
@@ -32,13 +33,19 @@
           <div class="title-box">
             <div class="hint"><p>已上传0张文件，共0.00KB</p></div>
             <div class="upload-button">
-              <!-- <button type="button" class="el-button el-button--primary">
-               <span>开始检查</span>
-              </button> -->
+              <button type="button" class="el-button el-button--primary">
+                <span>开始检查</span>
+              </button>
               <el-button type="primary">开始检测</el-button>
             </div>
           </div>
           <div class="defaultImg"></div>
+          <div v-for="item in fileList" :key="item.name">
+            <img :src="item.response.files.file" />
+            <div>
+              <i class="el-icon-delete" @click="rmImage" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -46,23 +53,72 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      fileList: [
+        // {
+        //   name: "food.jpeg",
+        //   url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
+        // },
+        // {
+        //   name: "food2.jpeg",
+        //   url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
+        // },
+      ],
+    };
+  },
+  methods: {
+    async handleImageSuccess(a, b, c) {
+      console.log(a);
+      console.log(b);
+      console.log(c);
+      // this.fileList.push(file.files.file);
+      // console.log(typeof file.files.file);
+      // this.imageShow=true
+      // this.$nextTick(() => {
+      //   this.fileList.map((e) => {
+      //     e.url = e.response.files.file;
+      //   });
+      // });
+
+      console.log(this.fileList);
+    },
+    beforeUpload(file) {
+      // this.fileList=this.fileList.push(file)
+
+      console.log(this.fileList);
+    },
+  },
+};
 </script>
 
-<style  scoped>
+<style lang="less" >
 #ImgUploads {
   height: 856px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   background: #f1f1f1;
   padding: 30px;
+  .contaner {
+    padding: 30px 0 40px 0;
+    width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    /deep/ .el-upload-list {
+      position: absolute;
+      overflow-y: auto;
+      overflow-x: hidden;
+      margin-top: 35px;
+      height: 670px;
+      -webkit-transform: translateY(20px);
+      transform: translateY(20px);
+      left: 480px;
+      top: 70px;
+    }
+  }
 }
-#ImgUploads .contaner {
-  padding: 30px 0 40px 0;
-  width: 1200px;
-  margin: 0 auto;
-  position: relative;
-}
+
 #ImgUploads .contaner-box {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -120,9 +176,21 @@ export default {};
   margin: 65px auto;
 }
 #ImgUploads .contaner-box-left-upload {
-    height: 340px;
-    display: flex;
-    justify-content: center;
+  height: 340px;
+  // display: flex;
+  // justify-content: center;
 }
-</style>>
+#ImgUploads .el-upload--picture-card {
+  background-color: #fbfdff;
+  border: 1px dashed #c0ccda;
+  border-radius: 6px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 148px;
+  height: 148px;
+  cursor: pointer;
+  line-height: 0px;
+  vertical-align: top;
+}
+</style>
 
