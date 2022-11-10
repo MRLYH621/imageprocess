@@ -23,11 +23,42 @@
               :on-remove="handleIgameRemove"
             >
               <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                将文件拖到此处，或<em>点击上传</em>
-              </div>
+              <div class="el-upload__text">或将文件拖到此处上传</div>
+              <el-button type="primary" class="uploadButton">
+                <span style="font-size: 10px">点击上传图片</span>
+              </el-button>
+              <i class="annotation">支持格式：jpg、png、jpeg、bmp</i>
+              <p class="annotation" style="color: rgb(230, 32, 33)">
+                上传限制：单张图片不超过10MB；总大小不超过100MB
+              </p>
               <div class="el-upload__tip" slot="tip"></div>
             </el-upload>
+          </div>
+          <div class="introduction">
+            <p
+              style="
+                color: #000 !important;
+                font-size: 16px !important;
+                font-weight: 600;
+              "
+            >
+              使用帮助:
+            </p>
+            <ul>
+              <li>
+                <span class="introTitle">快速检査模式:</span>
+                在确定上传图片为中国地图的基础上，直接判断是否存在重大版图问题，标识井说明错误原因。
+              </li>
+              <li>
+                <span class="introTitle">混合检查模式:</span>
+                根据用户上传图片(包括jpg、png、jpeg、bmp格式)，采用人工智能技术，首先选出地图图片，然后再筛选出中国地图图片，最后再判断是否存在重大版图问题，标识并说明错误原因
+              </li>
+              <li>
+                该工具为科技工作者撰写技术报告或学术论文插图自检
+                <i style="font-weight: 600; color: rgb(51, 51, 51)">提供参考</i>
+                。如有地图送审业务，请联系自然资源部地图技术审查中心。
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -86,6 +117,12 @@ export default {
 </script>
 
 <style lang="less" >
+#ImgUploads .uploadButton {
+  width: 300px;
+  height: 52px;
+  margin: 30px;
+  display: block;
+}
 #ImgUploads {
   height: 856px;
   -webkit-box-sizing: border-box;
@@ -211,6 +248,32 @@ export default {
   height: 225px;
   margin: 0 8px 8px 0;
   display: inline-block;
+}
+#ImgUploads .el-upload-dragger {
+  width: 380px;
+  height: 340px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+#ImgUploads .annotation {
+  font-size: 14px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  font-weight: 400;
+  color: #999;
+  line-height: 20px;
+  margin-top: 0px;
+  margin-bottom: 15px;
+}
+.introduction{
+  color: #b2b2b2;
+}
+.introTitle{
+  color: #000;
 }
 </style>
 
