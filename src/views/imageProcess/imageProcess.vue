@@ -68,7 +68,9 @@
               <p>已上传{{ fileNum }}张文件，共{{ fileSizeSum }}KB</p>
             </div>
             <div class="upload-button">
-              <el-button type="primary" size="mini">开始检测</el-button>
+              <el-button type="primary" size="mini" @click="gotoPage"
+                >开始检测</el-button
+              >
             </div>
           </div>
           <div :class="{ defaultImg: fileNum == 0 }"></div>
@@ -98,6 +100,13 @@ export default {
     },
   },
   methods: {
+    gotoPage() {
+      if(this.fileNum==0) return
+      this.$router.push({
+        path: "/detectionlist",
+        query: { file: this.fileList },
+      });
+    },
     async handleImageSuccess(response, file, c) {
       // console.log(c);
     },
@@ -269,10 +278,10 @@ export default {
   margin-top: 0px;
   margin-bottom: 15px;
 }
-.introduction{
+.introduction {
   color: #b2b2b2;
 }
-.introTitle{
+.introTitle {
   color: #000;
 }
 </style>

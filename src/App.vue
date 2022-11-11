@@ -2,7 +2,6 @@
   <div id="app">
     <Header></Header>
     <router-view></router-view>
-    <ImageProcess></ImageProcess>
   </div>
 </template>
 

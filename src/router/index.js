@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import ImageProcess from '../views/imageProcess/imageProcess.vue'
+import DetectionList from '../views/./imageProcess/DetectionList.vue'
 Vue.use(Router)
 
 const routes = [{
@@ -8,6 +9,9 @@ const routes = [{
 }, {
     path: '/imageprocess',
     component: ImageProcess
+}, {
+    path: '/detectionlist',
+    component: DetectionList
 
 }]
 const router = new Router({
