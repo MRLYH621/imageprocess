@@ -4,9 +4,10 @@
       <div class="container-left">
         <div class="container-left-box">
           <div
-            class="container-left-info"
+            :class="{ 'container-left-info': true, disabledStyle: true }"
             v-for="item in fileList"
-            :key="item.name"
+            :key="item.uid"
+            @click="getCurrentImage(item)"
           >
             <div>
               <img
@@ -25,14 +26,18 @@
                 <p>是否是问题地图检查</p>
               </div>
               <div class="status">
-                <p>40.9KB</p>
-                <p>
+                <p>{{ (item.size / 1024).toFixed(2) }}Kb</p>
+                <p v-if="processed">
                   <el-button
                     type="success"
                     round
                     icon="el-icon-check"
                   ></el-button
                   ><span style="color: #43ce5b">检查完成</span>
+                </p>
+                <p v-else>
+                  <el-button type="info" round icon="el-icon-more"></el-button
+                  ><span style="color: #999">等待中</span>
                 </p>
               </div>
             </div>
@@ -42,16 +47,34 @@
       </div>
       <div class="container-right">
         <div class="title-box">
-          <p class="title-box-text">微信图片_20221107130452 - 副本.jpg</p>
+          <p class="title-box-text" v-if="processed">{{ currentImage.name }}</p>
+          <p class="title-box-text" v-else>正在快速检测中</p>
           <div>
-            <el-button type="primary" size="mini">继续检查</el-button>
-            <el-button type="primary" size="mini">导出结果</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="processed"
+              @click="toPage"
+              >继续检查</el-button
+            >
+            <el-button type="primary" size="mini" v-if="processed"
+              >导出结果</el-button
+            >
           </div>
         </div>
         <div class="img-show-box">
-          <img style="height: 430px" :src="fileList[1].response.files.file" />
+          <img
+            v-if="processed"
+            style="height: 430px"
+            :src="currentImage.response.files.file"
+          />
+          <img
+            v-else
+            style="height: 430px"
+            :src="currentImage.response.files.file"
+          />
         </div>
-        <div class="instruction">
+        <div class="instruction" v-if="processed">
           <p>问题说明</p>
           <div class="problemContain">
             <div class="problem">阿克赛钦区域存在问题</div>
@@ -71,37 +94,28 @@ export default {
   data() {
     return {
       fileList: [],
+      currentImage: {},
+      processed: true,
     };
   },
   created() {
-    // if (this.fileList.length == 0) {
-    //   this.$router.pusn({ path: "/imageprocess" });
-    // }
-    // this.fileList = this.$route.query.file
-    //   ? [
-    //       {
-    //         name: "food.jpeg",
-    //         response: {
-    //           files: {
-    //             file: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-    //           },
-    //         },
-    //       },
-    //       {
-    //         name: "food2.jpeg",
-    //         response: {
-    //           files: {
-    //             file: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-    //           },
-    //         },
-    //       },
-    //     ]
-    //   : this.$route.query.file;
     this.fileList = this.$route.query.file;
-    console.log(this.$route.query);
+    this.currentImage = this.fileList[0];
+  },
+  mounted() {
+    window.addEventListener("load", () => {
+      this.$router.push({ path: "imageProcess" });
+    });
   },
   computed: {},
-  methods: {},
+  methods: {
+    getCurrentImage(currentImage) {
+      this.currentImage = currentImage;
+    },
+    toPage() {
+      this.$router.push({ path: "imageProcess" });
+    },
+  },
 };
 </script>
 
@@ -158,6 +172,9 @@ export default {
       justify-content: space-between;
       cursor: pointer;
       border: 1px solid #2f8efe !important;
+      .disabledStyle {
+        cursor: not-allowed !important;
+      }
     }
 
     .container-left-info-img {
@@ -255,9 +272,7 @@ export default {
     }
   }
 }
-#AnExamination .disabledStyle {
-  cursor: not-allowed !important;
-}
+
 .el-button.is-round {
   border-radius: 20px;
   padding: 0px 0px;

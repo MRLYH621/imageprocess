@@ -68,7 +68,11 @@
               <p>已上传{{ fileNum }}张文件，共{{ fileSizeSum }}KB</p>
             </div>
             <div class="upload-button">
-              <el-button type="primary" size="mini" @click="gotoPage"
+              <el-button
+                type="primary"
+                size="mini"
+                @click="gotoPage"
+                :disabled="detection"
                 >开始检测</el-button
               >
             </div>
@@ -85,6 +89,7 @@ export default {
   data() {
     return {
       fileList: [],
+      loaded: false,
     };
   },
   computed: {
@@ -98,28 +103,45 @@ export default {
       });
       return sizeSum.toFixed(2);
     },
+    detection() {
+      if (this.fileList == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   methods: {
     gotoPage() {
-      if(this.fileNum==0) return
+      if (this.fileNum == 0) {
+        this.$message({
+          type: "warning",
+          message: "请上传图片",
+        });
+        return;
+      }
       this.$router.push({
         path: "/detectionlist",
         query: { file: this.fileList },
       });
     },
-    async handleImageSuccess(response, file, c) {
-      // console.log(c);
+    async handleImageSuccess(response, file, fileList) {
+      fileList.map(item=>{
+        if(item.status=='success'){
+          this.loaded=true
+        }
+      })
     },
     handleIgameRemove(file, fileList) {
-      console.log(fileList);
+      
       this.fileList = fileList;
     },
     handleImageChange(file, fileList) {
-      console.log(fileList);
+    
       this.fileList = fileList;
     },
     beforeUpload(file) {
-      // console.log(this.fileList);
+      console.log(this.fileList);
     },
   },
 };
