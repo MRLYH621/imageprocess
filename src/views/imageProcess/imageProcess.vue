@@ -1,6 +1,11 @@
 <template>
   <div id="ImgUploads">
-    <div class="contain">
+    <div
+      class="contain"
+      v-loading="loading"
+      element-loading-text="等待图片上传完成"
+      element-loading-spinner="el-icon-loading"
+    >
       <div class="contaner-box">
         <div class="contaner-box-left">
           <div class="contaner-box-left-title">
@@ -90,6 +95,7 @@ export default {
     return {
       fileList: [],
       loaded: false,
+      loading: false,
     };
   },
   computed: {
@@ -112,7 +118,7 @@ export default {
     },
   },
   methods: {
-    gotoPage() {
+    async gotoPage() {
       if (this.fileNum == 0) {
         this.$message({
           type: "warning",
@@ -120,24 +126,28 @@ export default {
         });
         return;
       }
-      this.$router.push({
-        path: "/detectionlist",
-        query: { file: this.fileList },
-      });
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.$router.push({
+          path: "/detectionlist",
+          query: { file: this.fileList },
+        });
+      }, 3000);
     },
     async handleImageSuccess(response, file, fileList) {
-      fileList.map(item=>{
-        if(item.status=='success'){
-          this.loaded=true
+      fileList.map((item) => {
+        if (item.status == "success") {
+          this.loaded = true;
         }
-      })
+      });
     },
     handleIgameRemove(file, fileList) {
-      
+      console.log(1)
       this.fileList = fileList;
     },
     handleImageChange(file, fileList) {
-    
+      console.log(2)
       this.fileList = fileList;
     },
     beforeUpload(file) {

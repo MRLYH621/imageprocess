@@ -23,7 +23,6 @@
                     <span>微信图片_20221107104307.jpg</span>
                   </p>
                 </div>
-                <p>是否是问题地图检查</p>
               </div>
               <div class="status">
                 <p>{{ (item.size / 1024).toFixed(2) }}Kb</p>
@@ -62,18 +61,26 @@
             >
           </div>
         </div>
-        <div class="img-show-box">
-          <img
-            v-if="processed"
-            style="height: 430px"
-            :src="currentImage.response.files.file"
-          />
-          <img
-            v-else
-            style="height: 430px"
-            :src="currentImage.response.files.file"
-          />
+        <div class="img-show-box" v-if="processed">
+          <img style="height: 430px" :src="currentImage.response.files.file" />
         </div>
+        <div v-else>
+          <div class="uploadBox2">
+            <div class="mapImg-box">
+              <img :src="currentImage.response.files.file" class="imgIng" /><img
+                src="../../assets/边框.png"
+                class="background-four-corners"
+              /><img src="../../assets/扫描条.png" class="scanBar" />
+            </div>
+            <div class="text-box">
+              <div>
+                <p></p>
+                <p>等待问题检查</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="instruction" v-if="processed">
           <p>问题说明</p>
           <div class="problemContain">
@@ -95,12 +102,15 @@ export default {
     return {
       fileList: [],
       currentImage: {},
-      processed: true,
+      processed: false,
     };
   },
   created() {
     this.fileList = this.$route.query.file;
     this.currentImage = this.fileList[0];
+    setTimeout(() => {
+      this.processed = true;
+    }, 12000);
   },
   mounted() {
     window.addEventListener("load", () => {
@@ -242,6 +252,53 @@ export default {
       -ms-flex-align: center;
       align-items: center;
     }
+    .uploadBox2 {
+      border: 1px dashed #c0ccda;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      width: 100%;
+      height: 430px;
+      color: #000;
+      background: #fff;
+      padding: 10px;
+      .mapImg-box {
+        width: 340px;
+        height: 190px;
+        background-size: 100% 100%;
+        margin: 0 auto;
+        margin-top: 80px;
+        position: relative;
+        .imgIng {
+          width: 340px;
+          height: 190px;
+          border-radius: 32px;
+        }
+        .background-four-corners {
+          position: absolute;
+          top: 0;
+          width: 340px;
+          height: 190px;
+          left: 0;
+        }
+        .scanBar {
+          width: 130%;
+          left: -49px;
+          position: absolute;
+          top: 0;
+          -webkit-animation: scanning 5s linear infinite;
+          animation: scanning 4s linear infinite;
+        }
+        @keyframes scanning {
+          from {
+            top: 0px;
+          }
+          to {
+            top: 192px;
+          }
+        }
+      }
+    }
+
     .instruction {
       margin: 20px 0;
       display: block;
