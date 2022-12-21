@@ -22,7 +22,7 @@
               :file-list="fileList"
               :show-file-list="true"
               list-type="picture-card"
-              action="https://httpbin.org/post"
+              action="http://120.53.20.27:3000/upload"
               multiple
               :on-change="handleImageChange"
               :on-remove="handleIgameRemove"
@@ -96,6 +96,7 @@ export default {
       fileList: [],
       loaded: false,
       loading: false,
+      successNum: 0,
     };
   },
   computed: {
@@ -126,28 +127,60 @@ export default {
         });
         return;
       }
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
+      if (this.fileNum == this.successNum) {
         this.$router.push({
           path: "/detectionlist",
           query: { file: this.fileList },
         });
-      }, 3000);
+      } else {
+        if (this.successNum == 0) {
+          this.$message({
+            type: "waring",
+            message: "无图片上传成功，不能开始检测",
+          });
+        }
+        this.$confirm(
+          `预期上传${this.fileNum}张图片，现已成功上传${this.successNum}张，是否开始检测`,
+          "提示",
+          {
+            confirmButtonText: "检测",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        )
+          .then(() => {
+            // 确定操作
+            this.$router.push({
+              path: "/detectionlist",
+              query: { file: this.fileList },
+            });
+          })
+          .catch(() => {
+            // 取消操作
+            this.$message({
+              type: "info",
+              message: "已取消退出",
+            });
+          });
+      }
+      // this.loading = true;
+      // setTimeout(() => {
+      //   this.loading = false;
+      //   this.$router.push({
+      //     path: "/detectionlist",
+      //     query: { file: this.fileList },
+      //   });
+      // }, 3000);
     },
     async handleImageSuccess(response, file, fileList) {
-      fileList.map((item) => {
-        if (item.status == "success") {
-          this.loaded = true;
-        }
-      });
+      this.successNum += 1;
+      console.log(this.successNum);
     },
     handleIgameRemove(file, fileList) {
-      console.log(1)
+      console.log(1);
       this.fileList = fileList;
     },
     handleImageChange(file, fileList) {
-      console.log(2)
       this.fileList = fileList;
     },
     beforeUpload(file) {

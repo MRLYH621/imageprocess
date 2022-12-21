@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import ImageProcess from '../views/imageProcess/imageProcess.vue'
+import MapCheck from '../views/imageProcess/imageProcess.vue'
 import DetectionList from '../views/./imageProcess/DetectionList.vue'
 Vue.use(Router)
 
 const routes = [{
-    path: '/', redirect: '/imageprocess'
+    path: '/', redirect: '/mapcheck'
 }, {
-    path: '/imageprocess',
-    component: ImageProcess
+    path: '/mapcheck',
+    component: MapCheck
 }, {
     path: '/detectionlist',
     component: DetectionList

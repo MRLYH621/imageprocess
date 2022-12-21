@@ -20,7 +20,7 @@
               <div class="step">
                 <div>
                   <p>
-                    <span>微信图片_20221107104307.jpg</span>
+                    <span>{{ item.name }}</span>
                   </p>
                 </div>
               </div>
@@ -97,28 +97,55 @@
 </template>
 
 <script>
+import { sendImage } from "@/api/process.js";
 export default {
   data() {
     return {
-      fileList: [],
+      fileList: [
+        {
+          response: {
+            files: { file: "123" },
+          },
+        },
+      ],
       currentImage: {},
       processed: false,
     };
   },
-  created() {
+  async created() {
     this.fileList = this.$route.query.file;
     this.currentImage = this.fileList[0];
-    setTimeout(() => {
-      this.processed = true;
-    }, 12000);
   },
-  mounted() {
+  async mounted() {
     window.addEventListener("load", () => {
       this.$router.push({ path: "imageProcess" });
     });
+    await this.sendImage();
+    // this.getdetectResult();
   },
   computed: {},
   methods: {
+    async sendImage() {
+      const sendData = {
+        taskId: "123",
+        fileList: JSON.stringify(this.fileList),
+      };
+      const res = await sendImage(sendData);
+      const data = JSON.parse(res.files.file);
+      this.processed = true;
+      console.log(data);
+    },
+
+    // getdetectResult() {
+    //   const myInterval = setInterval(async () => {
+    //     const res = await getData();
+    //     if (res.data.name == "liyuang1") {
+
+    //       clearInterval(myInterval);
+    //     }
+    //   }, 2000);
+    // },
+
     getCurrentImage(currentImage) {
       this.currentImage = currentImage;
     },
