@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import MapCheck from '../views/imageProcess/imageProcess.vue'
+import ImageProcess from '../views/imageProcess/imageProcess.vue'
 import DetectionList from '../views/./imageProcess/DetectionList.vue'
 Vue.use(Router)
 
@@ -8,7 +8,7 @@ const routes = [{
     path: '/', redirect: '/mapcheck'
 }, {
     path: '/mapcheck',
-    component: MapCheck
+    component: ImageProcess
 }, {
     path: '/detectionlist',
     component: DetectionList

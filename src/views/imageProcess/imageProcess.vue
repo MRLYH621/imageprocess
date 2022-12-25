@@ -10,7 +10,7 @@
         <div class="contaner-box-left">
           <div class="contaner-box-left-title">
             <div class="title-img-box"></div>
-            <h2 class="title1">图像检测</h2>
+            <h2 class="title1">中国地图纠错</h2>
           </div>
 
           <div class="contaner-box-left-upload">
@@ -90,6 +90,8 @@
 </template>
 
 <script>
+import { test } from "@/api/algorithm.js";
+import { getData } from "@/api/process.js";
 export default {
   data() {
     return {
@@ -118,7 +120,19 @@ export default {
       }
     },
   },
+  created() {
+    this.test();
+    this.name();
+  },
   methods: {
+    test() {
+      const res = test();
+      console.log(res);
+    },
+    name() {
+      const res = getData();
+      console.log(res);
+    },
     async gotoPage() {
       if (this.fileNum == 0) {
         this.$message({
