@@ -16,6 +16,7 @@ const routes = [{
 }]
 const router = new Router({
     mode: 'hash',
+    // base: "/mapcheck/",
     routes: routes
 })
 export default router

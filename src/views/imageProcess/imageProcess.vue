@@ -1,5 +1,5 @@
 <template>
-  <div id="ImgUploads">
+  <div id="ImgUploads" v-loading="upING" element-loading-text="图片上传中">
     <div
       class="contain"
       v-loading="loading"
@@ -18,14 +18,14 @@
               :before-upload="beforeUpload"
               :on-success="handleImageSuccess"
               drag
-              :limit="5"
+              :limit="1"
               :file-list="fileList"
               :show-file-list="true"
               list-type="picture-card"
-              action="http://120.53.20.27:3000/upload"
-              multiple
+              action="http://g5.guodata.com:3389/upload"
               :on-change="handleImageChange"
               :on-remove="handleIgameRemove"
+              :on-exceed="handleExceed"
             >
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">或将文件拖到此处上传</div>
@@ -34,7 +34,7 @@
               </el-button>
               <i class="annotation">支持格式：jpg、png、jpeg、bmp</i>
               <p class="annotation" style="color: rgb(230, 32, 33)">
-                上传限制：单张图片不超过10MB；总大小不超过100MB
+                <!-- 上传限制：单张图片不超过300KB;图片总数不超过5张 -->
               </p>
               <div class="el-upload__tip" slot="tip"></div>
             </el-upload>
@@ -51,17 +51,18 @@
             </p>
             <ul>
               <li>
-                <span class="introTitle">快速检査模式:</span>
-                在确定上传图片为中国地图的基础上，直接判断是否存在重大版图问题，标识井说明错误原因。
-              </li>
-              <li>
-                <span class="introTitle">混合检查模式:</span>
+                <span class="introTitle">YOLO检查模式(默认):</span>
                 根据用户上传图片(包括jpg、png、jpeg、bmp格式)，采用人工智能技术，首先选出地图图片，然后再筛选出中国地图图片，最后再判断是否存在重大版图问题，标识并说明错误原因
               </li>
               <li>
+                <span class="introTitle">RCNN检査模式:</span>
+                在确定上传图片为中国地图的基础上，直接判断是否存在重大版图问题，标识井说明错误原因。
+              </li>
+
+              <li>
                 该工具为科技工作者撰写技术报告或学术论文插图自检
                 <i style="font-weight: 600; color: rgb(51, 51, 51)">提供参考</i>
-                。如有地图送审业务，请联系自然资源部地图技术审查中心。
+                。
               </li>
             </ul>
           </div>
@@ -73,13 +74,22 @@
               <p>已上传{{ fileNum }}张文件，共{{ fileSizeSum }}KB</p>
             </div>
             <div class="upload-button">
-              <el-button
-                type="primary"
-                size="mini"
-                @click="gotoPage"
-                :disabled="detection"
-                >开始检测</el-button
+              <!-- <el-dropdown @command="gotoPage"> -->
+              <el-tooltip content="默认yolo检测模式" placement="top-start">
+                <el-button
+                  type="primary"
+                  size="mini"
+                  :disabled="detection"
+                  @click="gotoPage"
+                  >开始检测</el-button
+                ></el-tooltip
               >
+
+              <!-- <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="rcnn">RCNN检测</el-dropdown-item>
+                  <el-dropdown-item command="yolo">YOLO检测</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown> -->
             </div>
           </div>
           <div :class="{ defaultImg: fileNum == 0 }"></div>
@@ -90,8 +100,8 @@
 </template>
 
 <script>
-import { test } from "@/api/algorithm.js";
 import { getData } from "@/api/process.js";
+
 export default {
   data() {
     return {
@@ -99,6 +109,7 @@ export default {
       loaded: false,
       loading: false,
       successNum: 0,
+      upING: false,
     };
   },
   computed: {
@@ -120,18 +131,10 @@ export default {
       }
     },
   },
-  created() {
-    this.test();
-    this.name();
-  },
+  async created() {},
   methods: {
-    test() {
-      const res = test();
-      console.log(res);
-    },
-    name() {
-      const res = getData();
-      console.log(res);
+    handleExceed() {
+      this.$message({ type: "error", message: "只允许单图上传" });
     },
     async gotoPage() {
       if (this.fileNum == 0) {
@@ -141,10 +144,11 @@ export default {
         });
         return;
       }
+
       if (this.fileNum == this.successNum) {
         this.$router.push({
           path: "/detectionlist",
-          query: { file: this.fileList },
+          query: { file: this.fileList, mode: "yolo" },
         });
       } else {
         if (this.successNum == 0) {
@@ -152,30 +156,31 @@ export default {
             type: "waring",
             message: "无图片上传成功，不能开始检测",
           });
+          return;
         }
-        this.$confirm(
-          `预期上传${this.fileNum}张图片，现已成功上传${this.successNum}张，是否开始检测`,
-          "提示",
-          {
-            confirmButtonText: "检测",
-            cancelButtonText: "取消",
-            type: "warning",
-          }
-        )
-          .then(() => {
-            // 确定操作
-            this.$router.push({
-              path: "/detectionlist",
-              query: { file: this.fileList },
-            });
-          })
-          .catch(() => {
-            // 取消操作
-            this.$message({
-              type: "info",
-              message: "已取消退出",
-            });
-          });
+        // this.$confirm(
+        //   `预期上传${this.fileNum}张图片，现已成功上传${this.successNum}张，是否开始检测`,
+        //   "提示",
+        //   {
+        //     confirmButtonText: "检测",
+        //     cancelButtonText: "取消",
+        //     type: "warning",
+        //   }
+        // )
+        //   .then(() => {
+        //     // 确定操作
+        //     this.$router.push({
+        //       path: "/detectionlist",
+        //       query: { file: this.fileList },
+        //     });
+        //   })
+        //   .catch(() => {
+        //     // 取消操作
+        //     this.$message({
+        //       type: "info",
+        //       message: "已取消退出",
+        //     });
+        //   });
       }
       // this.loading = true;
       // setTimeout(() => {
@@ -187,8 +192,12 @@ export default {
       // }, 3000);
     },
     async handleImageSuccess(response, file, fileList) {
+      this.upING = true;
       this.successNum += 1;
-      console.log(this.successNum);
+
+      setTimeout(() => {
+        this.upING = false;
+      }, this.fileNum * 1500);
     },
     handleIgameRemove(file, fileList) {
       console.log(1);
@@ -198,7 +207,14 @@ export default {
       this.fileList = fileList;
     },
     beforeUpload(file) {
-      console.log(this.fileList);
+      console.log(file);
+      // if (file.size > 307200) {
+      //   this.$message({
+      //     type: "error",
+      //     message: "图片超过300KB，不允许上传",
+      //   });
+      //   return false;
+      // }
     },
   },
 };
@@ -240,6 +256,7 @@ export default {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  justify-content: center;
 }
 #ImgUploads .contaner-box-left {
   width: 440px;

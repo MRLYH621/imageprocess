@@ -20,7 +20,7 @@
               <div class="step">
                 <div>
                   <p>
-                    <span>{{ item.name }}</span>
+                    <span>{{ item.name.substring(0,17) }}...</span>
                   </p>
                 </div>
               </div>
@@ -44,51 +44,118 @@
           </div>
         </div>
       </div>
-      <div class="container-right">
-        <div class="title-box">
-          <p class="title-box-text" v-if="processed">{{ currentImage.name }}</p>
-          <p class="title-box-text" v-else>正在快速检测中</p>
-          <div>
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="processed"
-              @click="toPage"
-              >继续检查</el-button
-            >
-            <el-button type="primary" size="mini" v-if="processed"
-              >导出结果</el-button
-            >
-          </div>
-        </div>
-        <div class="img-show-box" v-if="processed">
-          <img style="height: 430px" :src="currentImage.response.files.file" />
-        </div>
-        <div v-else>
-          <div class="uploadBox2">
-            <div class="mapImg-box">
-              <img :src="currentImage.response.files.file" class="imgIng" /><img
-                src="../../assets/边框.png"
-                class="background-four-corners"
-              /><img src="../../assets/扫描条.png" class="scanBar" />
-            </div>
-            <div class="text-box">
+      <div>
+        <div class="container-right">
+          <div class="yolo">
+            <div class="title-box">
+              <p class="title-box-text" v-if="processed">
+                {{ currentImage.name.substring(0,30) }}...
+              </p>
+              <p class="title-box-text" v-else>正在快速检测中</p>
               <div>
-                <p></p>
-                <p>等待问题检查</p>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  v-if="processed"
+                  @click="toPage"
+                  >继续检查</el-button
+                >
+                <el-button
+                  type="primary"
+                  size="mini"
+                  v-if="processed"
+                  @click="getRcnn"
+                  >对比RCNN模式</el-button
+                >
+              </div>
+            </div>
+            <div class="img-show-box" v-if="processed">
+              <img
+                style="height: 430px"
+                :src="currentImage.response.files.file"
+              />
+            </div>
+            <div v-else>
+              <div class="uploadBox2">
+                <div class="mapImg-box">
+                  <img
+                    :src="currentImage.response.files.file"
+                    class="imgIng"
+                  /><img
+                    src="../../assets/边框.png"
+                    class="background-four-corners"
+                  /><img src="../../assets/扫描条.png" class="scanBar" />
+                </div>
+                <div class="text-box">
+                  <div>
+                    <p></p>
+                    <p>等待问题检查</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="instruction" v-if="processed">
+              <p>问题说明</p>
+              <div class="problemContain">
+                <div
+                  class="problem"
+                  v-for="item in currentImage.response.result"
+                  :key="item"
+                >
+                  {{ item }}
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="container-right" v-if="mode == 'rcnn'">
+          <div class="title-box">
+            <span class="title-box-mode">rcnn模式</span>
+          </div>
+          <div class="title-box">
+            <p class="title-box-text" v-if="processed">
+               {{ currentImage.name.substring(0,40) }}...
+            </p>
+            <p class="title-box-text" v-else>正在快速检测中</p>
+          </div>
+          <div class="img-show-box" v-if="processed">
+            <img
+              style="height: 430px"
+              :src="currentImage.response.files.file"
+            />
+          </div>
+          <div v-else>
+            <div class="uploadBox2">
+              <div class="mapImg-box">
+                <img
+                  :src="currentImage.response.files.file"
+                  class="imgIng"
+                /><img
+                  src="../../assets/边框.png"
+                  class="background-four-corners"
+                /><img src="../../assets/扫描条.png" class="scanBar" />
+              </div>
+              <div class="text-box">
+                <div>
+                  <p></p>
+                  <p>等待问题检查</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div class="instruction" v-if="processed">
-          <p>问题说明</p>
-          <div class="problemContain">
-            <div class="problem">阿克赛钦区域存在问题</div>
-            <div class="problem">藏南区域存在问题</div>
-            <div class="problem">钓鱼岛区域存在问题</div>
-            <div class="problem">南海诸岛框缺失</div>
-            <div class="problem">南海诸岛正确的概率为: 0.988</div>
+          <div class="instruction" v-if="processed">
+            <p>问题说明</p>
+            <div class="problemContain">
+              <div
+                class="problem"
+                v-for="item in currentImage.response.result"
+                :key="item"
+              >
+                {{ item }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +164,7 @@
 </template>
 
 <script>
-import { sendImage } from "@/api/process.js";
+import { sendImage ,getAlgorithm} from "@/api/process.js";
 export default {
   data() {
     return {
@@ -108,49 +175,91 @@ export default {
           },
         },
       ],
-      currentImage: {},
+      currentImage: {
+        response: {
+          files: { file: "123" },
+        },
+      },
+      currentImageRcnn: {},
       processed: false,
+      mode: "yolo",
     };
   },
   async created() {
-    this.fileList = this.$route.query.file;
+    this.fileList =
+      typeof this.$route.query.file[0] != "string"
+        ? this.$route.query.file
+        : [
+            {
+              response: {
+                files: { file: "123" },
+              },
+            },
+          ];
+    this.fileListRcnn =
+      typeof this.$route.query.file[0] != "string"
+        ? this.$route.query.file
+        : [
+            {
+              response: {
+                files: { file: "123" },
+              },
+            },
+          ];
+    this.mode = this.$route.query.mode;
     this.currentImage = this.fileList[0];
+    this.currentImageRcnn = this.fileList[0];
   },
-  async mounted() {
+
+  mounted() {
+    // setInterval(()=>{
+    //   this.getAlgData()
+    // },5000)
+    console.log(this.$route.query.file);
+    if (typeof this.$route.query.file == "string") {
+      this.$router.push({ path: "mapcheck" });
+      return;
+    }
+    if (typeof this.$route.query.file[0] != "string") {
+      this.sendImage();
+    }
     window.addEventListener("load", () => {
-      this.$router.push({ path: "imageProcess" });
+      this.$router.push({ path: "mapcheck" });
+      return;
     });
-    await this.sendImage();
-    // this.getdetectResult();
   },
   computed: {},
   methods: {
+    async getAlgData(){
+      const res = await getAlgorithm()
+      console.log(res)
+    },
     async sendImage() {
       const sendData = {
-        taskId: "123",
         fileList: JSON.stringify(this.fileList),
+        mode: this.mode,
       };
       const res = await sendImage(sendData);
-      const data = JSON.parse(res.files.file);
+      this.fileList = JSON.parse(res.files.file);
+      this.currentImage = this.fileList[0];
       this.processed = true;
-      console.log(data);
     },
-
-    // getdetectResult() {
-    //   const myInterval = setInterval(async () => {
-    //     const res = await getData();
-    //     if (res.data.name == "liyuang1") {
-
-    //       clearInterval(myInterval);
-    //     }
-    //   }, 2000);
-    // },
-
+    async getRcnn() {
+      this.mode = "rcnn";
+      const sendData = {
+        fileList: JSON.stringify(this.fileList),
+        mode: "rcnn",
+      };
+      const res = await sendImage(sendData);
+      // this.fileListRcnn = JSON.parse(res.files.file);
+      // this.currentImageRcnn = this.fileListRcnn[0];
+    },
     getCurrentImage(currentImage) {
       this.currentImage = currentImage;
+      this.mode = "yolo";
     },
     toPage() {
-      this.$router.push({ path: "imageProcess" });
+      this.$router.push({ path: "mapcheck" });
     },
   },
 };
@@ -182,7 +291,7 @@ export default {
     margin-top: 30px;
     border-radius: 4px;
     width: 440px;
-    height: 786px;
+    height: 1520px;
     background: #fff;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -240,10 +349,12 @@ export default {
   }
 
   .container-right {
+    display: flex;
+    flex-direction: column;
     margin-top: 30px;
     border-radius: 4px;
     width: 730px;
-    height: 786px;
+    height: 800px;
     padding: 10px 35px 35px 35px;
     background: #fff;
     -webkit-box-sizing: border-box;
@@ -261,6 +372,13 @@ export default {
         line-height: 40px;
         font-weight: 600;
         color: #333;
+        font-size: 20px;
+      }
+      .title-box-mode {
+        line-height: 40px;
+        font-weight: 600;
+        color: #333;
+        justify-content: center;
         font-size: 20px;
       }
     }

@@ -4,6 +4,7 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  VUE_BASE_URL: '"http://localhost:3000"',
-  VUE_ALGORITHM_URL:'"http://172.17.0.5:5000"'
+  // VUE_BASE_URL: '"http://localhost:8080"',
+  VUE_BASE_URL: '"http://g5.guodata.com:3389"',
+
 })

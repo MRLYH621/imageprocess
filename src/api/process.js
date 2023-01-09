@@ -1,7 +1,7 @@
 import request from "./request";
-export function getData() {
+export function getAlgorithm() {
     return request({
-        url: 'name',
+        url: 'resAlgorithm',
         method: 'get'
     })
 }
